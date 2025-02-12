@@ -1,0 +1,15 @@
+dudas proyecto repaso c
+-- no sd pudo utilizar el set %[^\n], utilicé fgets
+
+getchar();
+
+if(posicion != -1) que significa -1
+
+
+strcmp no compara mayusculas -> no puedo utilizarlo 
+
+-- falta agregar memoria dinamica y manejo de archivos
+
+fgets (argumentos- investigar stdin)
+agregar nombre: ap: etc, 
+agregar desc, fecha y hora para la salida 
