@@ -13,3 +13,11 @@ strcmp no compara mayusculas -> no puedo utilizarlo
 fgets (argumentos- investigar stdin)
 agregar nombre: ap: etc, 
 agregar desc, fecha y hora para la salida 
+
+cambiar la busqueda de nombre por posicion, igual en actualizar
+
+
+
+tarea
+buscar por fecha limite o 
+buscar por prioridad
