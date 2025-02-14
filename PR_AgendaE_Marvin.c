@@ -296,9 +296,11 @@ void agregarContacto(struct Contacto contactos[], int *num_contactos)
 
 	puts("Nombre: ");
 	fgets(contactos[*num_contactos].nombre, 50, stdin);
+	contactos[*num_contactos].nombre[strcspn(contactos[*num_contactos].nombre, "\n")]='\0';
 	//scanf("%[^\n]", contactos[*num_contactos].nombre);
 	puts("Apellido Paterno: ");
 	fgets(contactos[*num_contactos].a_paterno, 50, stdin);
+	contactos[*num_contactos].a_paterno[strcspn(contactos[*num_contactos].a_paterno, "\n")]='\0';
 	//scanf("%[^\n]", contactos[*num_contactos].a_paterno);
 	puts("Teléfono: ");
 	fgets(contactos[*num_contactos].telefono, 15, stdin);
@@ -369,7 +371,7 @@ int buscarContacto(struct Contacto contactos[], int posicion, int total, char no
 
 	//nombre[strcspn(nombre, "\n")]=0;
 
-	if(strcmp(contactos[posicion].nombre, nombre))
+	if(comparar_cadenas(contactos[posicion].nombre, nombre)==0)
 	{
 		return posicion;
 	}
@@ -388,9 +390,11 @@ void actualizarContacto(struct Contacto contactos[], int total)
 	char nombre_buscado[50];
 	int posicion, opcion;
 
-	printf("Ingrese el nombre del contacto a actualizar: ");
-	scanf("40%s",nombre_buscado);
-	//fgets(nombre_buscado, 50, stdin);
+	printf("\nIngrese el nombre del contacto a actualizar: ");
+	//scanf("40%s",nombre_buscado);
+	fgets(nombre_buscado, sizeof(nombre_buscado), stdin);
+	nombre_buscado[strcspn(nombre_buscado, "\n")]= '\0';
+
 
 	posicion = buscarContacto(contactos, 0, total, nombre_buscado);
 
@@ -400,11 +404,11 @@ void actualizarContacto(struct Contacto contactos[], int total)
 		return;
 	}
 
-	printf("Contacto emcontrado.\n");
-	printf("1. Nombre: %s", contactos[posicion].nombre);
-	printf("2. Apellido: %s", contactos[posicion].a_paterno);
-	printf("3. Teléfono: %s", contactos[posicion].telefono);
-	printf("4. Email: %s", contactos[posicion].email);
+	printf("Contacto encontrado.\n");
+	printf("1. Nombre: %s\n", contactos[posicion].nombre);
+	printf("2. Apellido: %s\n", contactos[posicion].a_paterno);
+	printf("3. Teléfono: %s\n", contactos[posicion].telefono);
+	printf("4. Email: %s\n", contactos[posicion].email);
 	printf("5. Cancelar Actualización.");
 
 	printf("\nSelecciona el dato que desea actualizar: ");
@@ -415,8 +419,8 @@ void actualizarContacto(struct Contacto contactos[], int total)
 	{
 	case 1: 
 		printf("Ingresa el nuevo nombre: ");
-		scanf("40%s", contactos[posicion].nombre);
-		//fgets(contactos[posicion].nombre, 50, stdin);
+		fgets(contactos[posicion].nombre, 50, stdin);
+		contactos[posicion].nombre[strcspn(contactos[posicion].nombre, "\n")]= '\0';
 		break;
 	case 2: 
 		printf("Ingresa el nuevo apellido: ");
@@ -473,7 +477,7 @@ void eliminarContacto(struct Contacto contactos[], int *num_contactos)
 	{
 		contactos[i]= contactos[i+1];
 	}
-	//memset(&contactos[*num_contactos-1],0,sizeof(struct Contacto));
+	memset(&contactos[*num_contactos-1],0,sizeof(struct Contacto));
 
 	(*num_contactos)--; 
 	printf("Contacto eliminado correctamente.\n");
