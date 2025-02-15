@@ -30,3 +30,8 @@ recursion -> mostrar contactos
 comparar_cadenas -> buscar y actualizar
 
 limpieza en citas y tareas
+
+if (agenda == NULL) {
+        printf("Error al asignar memoria\n");
+        exit(1); -cambie por return -1
+    }

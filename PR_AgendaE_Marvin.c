@@ -36,10 +36,12 @@ struct Tarea
 void agregarContacto(struct Contacto contactos[], int *num_contactos);
 void mostrarContactos(struct Contacto contactos[], int num_contactos);
 int comparar_cadenas(char *cad1, char *cad2);
-int buscarContacto(struct Contacto contactos[], int posicion, int total, char nombre[]);
+int buscarContacto(struct Contacto contactos[], int total, char nombre[]);
 void actualizarContacto(struct Contacto contactos[], int total);
 void eliminarContacto(struct Contacto contactos[], int *num_contactos);
-//void eliminarSaltoLinea(char *cadena);
+void cargarListaC(struct Contacto contactos[], int *num_contactos);
+void guardarContactos(struct Contacto contactos[], int num_contactos);
+
 
 void agregarCita(struct Cita citas[], int *num_citas);
 void mostrarCitas(struct Cita citas[], int num_citas);
@@ -53,6 +55,7 @@ int buscarTarea(struct Tarea tareas[], int posicion, int total, char fechaLimite
 
 int main(int argc, char const *argv[])
 {
+	
 	struct Contacto contactos[max_contactos];
 	struct Cita citas[max_citas];
 	struct Tarea tareas[max_tareas];
@@ -62,6 +65,16 @@ int main(int argc, char const *argv[])
 	int opcion, subopcion;
 	char nombre_buscado[50];
 	char cita_buscada[50];
+
+	cargarListaC(contactos, &num_contactos);
+	cargarListaCi(citas, &num_citas);
+	cargarListaT(tareas, &num_tareas);
+
+	printf("Contactos cargados: %d\n", num_contactos);
+	//mostrarContactos(contactos, num_contactos);
+	printf("Citas cargadas: %d\n", num_citas);
+	//mostrarCitas(citas, num_citas);
+
 	
 	puts("\nBIENVENIDO USUARIO\n");
 	
@@ -73,7 +86,7 @@ int main(int argc, char const *argv[])
 		printf("1. Gestión de Contactos\n");
 		printf("2. Gestión de Citas\n");
 		printf("3. Gestión de Tareas\n");
-		//printf("0. Salir\n");
+		printf("4. Salir\n");
 
 
 		printf("\nSelecciona una opción: ");
@@ -108,18 +121,13 @@ int main(int argc, char const *argv[])
 	                			printf("No hay contactos registrados.\n");
 	                			break;
 	                		}
-
-
-
 	                		puts("Ingresa el nombre a buscar: ");
+	                		while(getchar()!= '\n');
 	                		//scanf("%s", nombre_buscado);
 	                		fgets(nombre_buscado, sizeof(nombre_buscado), stdin);
 	                		nombre_buscado[strcspn(nombre_buscado, "\n")]='\0';
 
-	                		//eliminarSaltoLinea(nombre_buscado); //elimina '\n'
-
-	                		//nombre_buscado[strcspn(nombre_buscado, "\n")]=0;
-	                		int posicion= buscarContacto(contactos,0,num_contactos,nombre_buscado);
+	                		int posicion= buscarContacto(contactos,num_contactos,nombre_buscado);
 	                		if(posicion != -1)
 	                		{
 	                			printf("Contacto encontrado: \n - %s - %s - %s - %s\n",contactos[posicion].nombre,
@@ -278,10 +286,17 @@ int main(int argc, char const *argv[])
 
 				}while(subopcion != 6);
 				break;
+			case 4: 
+				printf("\nSaliendo del programa...");
+				guardarContactos(contactos, num_contactos);
+				return 0;
+			default:
+				printf("Opción invalida, intenta de nuevo\n");
 
 		}
 
 	}while(1);
+	
 
 	return 0;
 }
@@ -318,18 +333,18 @@ void mostrarContactos(struct Contacto contactos[], int num_contactos)
 {
 	if(num_contactos ==0)
 	{
-		printf("No hay contactos en la agenda\n");
+		printf("No hay contactos en la agenda.\n");
 		return;
 	}
 
 	printf("\n-> Lista de Contactos <-\n");
 	for(int i =0; i<num_contactos; i++)
 	{
-		printf("\n[%d] Nombre: %s",i+1, contactos[i].nombre);
-		printf("    Apellido: %s", contactos[i].a_paterno);
-		printf("    Teléfono: %s", contactos[i].telefono);
+		printf("\n[%d] Nombre: %s\n",i+1, contactos[i].nombre);
+		printf("    Apellido: %s\n", contactos[i].a_paterno);
+		printf("    Teléfono: %s\n", contactos[i].telefono);
 		printf("    Email: %s", contactos[i].email);
-		printf("----------\n");
+		printf("\n----------\n");
 	}
 }
 
@@ -351,37 +366,17 @@ int comparar_cadenas(char *cad1, char *cad2)
 	}
 	return *cad1 - *cad2;
 }
-/*
-void eliminarSaltoLinea(char *cadena)
+
+int buscarContacto(struct Contacto contactos[], int total, char nombre[])
 {
-	size_t len = strlen(cadena);
-	
-	if(len > 0 && cadena[len -1]== '\n')
+	for (int i = 0; i < total; i++)
 	{
-		cadena[len-1]='\0';
+		if (strcasecmp(contactos[i].nombre, nombre)==0)
+		{
+			return i;
+		}
 	}
-	
-}*/
-int buscarContacto(struct Contacto contactos[], int posicion, int total, char nombre[])
-{
-	if(posicion >= total)
-	{
-		return -1;
-	}
-
-	//nombre[strcspn(nombre, "\n")]=0;
-
-	if(comparar_cadenas(contactos[posicion].nombre, nombre)==0)
-	{
-		return posicion;
-	}
-
-	/*if(strcmp(contactos[posicion].nombre, nombre)== 0)
-	{
-		return posicion;
-	}*/
-
-	return buscarContacto(contactos, posicion +1, total, nombre );
+	return -1;
 }
 
 
@@ -396,7 +391,7 @@ void actualizarContacto(struct Contacto contactos[], int total)
 	nombre_buscado[strcspn(nombre_buscado, "\n")]= '\0';
 
 
-	posicion = buscarContacto(contactos, 0, total, nombre_buscado);
+	posicion = buscarContacto(contactos, total, nombre_buscado);
 
 	if (posicion== -1)
 	{
@@ -425,14 +420,17 @@ void actualizarContacto(struct Contacto contactos[], int total)
 	case 2: 
 		printf("Ingresa el nuevo apellido: ");
 		fgets(contactos[posicion].a_paterno, 50, stdin);
+		contactos[posicion].a_paterno[strcspn(contactos[posicion].a_paterno, "\n")]='\0';
 		break;
 	case 3: 
 		printf("Ingresa el nuevo teléfono: ");
 		fgets(contactos[posicion].telefono, 50, stdin);
+		contactos[posicion].telefono[strcspn(contactos[posicion].telefono, "\n")]= '\0';
 		break;
 	case 4: 
 		printf("Ingresa el nuevo email: ");
 		fgets(contactos[posicion].email, 50, stdin);
+		contactos[posicion].email[strcspn(contactos[posicion].email, "\n")]= '\0';
 		break;
 	case 5:
 		printf("Actualización cancelada...\n");
@@ -442,6 +440,7 @@ void actualizarContacto(struct Contacto contactos[], int total)
 		return;
 	}
 	printf("Contacto actualizado correctamente.\n");
+	guardarContactos(contactos, total);
 
 
 }
@@ -477,10 +476,12 @@ void eliminarContacto(struct Contacto contactos[], int *num_contactos)
 	{
 		contactos[i]= contactos[i+1];
 	}
-	memset(&contactos[*num_contactos-1],0,sizeof(struct Contacto));
+	//memset(&contactos[*num_contactos-1],0,sizeof(struct Contacto));
 
+	contactos[*num_contactos-1]=(struct Contacto){0};
 	(*num_contactos)--; 
 	printf("Contacto eliminado correctamente.\n");
+	guardarContactos(contactos, *num_contactos);
 }
 
 void agregarCita(struct Cita citas[], int *num_citas)
@@ -649,3 +650,51 @@ void eliminarTarea(struct Tarea tareas[], int *num_tareas)
 	printf("Tarea eliminada correctamente.\n");
 }
 
+void guardarContactos(struct Contacto contactos[], int num_contactos)
+{
+	FILE *archivo = fopen("lista_contactos.txt", "w");
+	if(archivo==NULL)
+	{
+		printf("Error al abrir el archivo.");
+		return;
+	}
+	for(int i=0; i<num_contactos; i++)
+	{
+		fprintf(archivo, "%s;%s;%s;%s\n",
+			contactos[i].nombre, contactos[i].a_paterno, contactos[i].telefono,
+			contactos[i].email);
+	}
+	fclose(archivo);
+	printf("\nContactos guardado correctamente.\n");
+}
+
+void cargarListaC(struct Contacto contactos[], int *num_contactos)
+{
+	FILE *archivo= fopen("lista_contactos.txt", "r");
+
+	if(archivo == NULL)
+	{
+		printf("No se encontró un archivo de registros previo.\n");
+		return;
+	}
+
+	*num_contactos=0;
+
+	while(fscanf(archivo, "%49[^;];%49[^;];%9[^;];%49[^\n]\n",
+		contactos[*num_contactos].nombre, contactos[*num_contactos].a_paterno,
+            contactos[*num_contactos].telefono, contactos[*num_contactos].email)!=EOF)
+	{
+		
+		(*num_contactos)++;
+		if (*num_contactos >= max_contactos)
+		{
+			printf("Se alcanzó el limite de contactos.\n");
+			break;
+		}
+		
+	}
+	
+	fclose(archivo);
+	printf("\nLista de contactos cargada correctamente desde 'lista_contectos.txt .\n'");
+
+}
